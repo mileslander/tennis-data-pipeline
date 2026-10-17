@@ -1,0 +1,6 @@
+[dependency-groups]
+dev = [
+    "inline-snapshot>=0.35.4",
+    "mcp[cli]>=2.2.0",
+    "pytest>=9.1.1",
+]
