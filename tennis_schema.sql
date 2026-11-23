@@ -113,3 +113,15 @@ create table Rankings
      date           date,
      primary key(pid, date)
 );
+
+create index idx_atp_wid   on ATPMatches(wid);
+create index idx_atp_lid   on ATPMatches(lid);
+create index idx_atp_wname on ATPMatches(wname);
+create index idx_atp_lname on ATPMatches(lname);
+
+create index idx_wta_wid   on WTAMatches(wid);
+create index idx_wta_lid   on WTAMatches(lid);
+create index idx_wta_wname on WTAMatches(wname);
+create index idx_wta_lname on WTAMatches(lname);
+
+create index idx_rankings_date on Rankings(date);
