@@ -1,22 +1,23 @@
 import sqlite3
 import csv
+from pathlib import Path 
 
 class loader:
 
     def __init__(self, conn: sqlite3.Connection):
         self.conn = conn
 
-    def load_all_data(match_path: str, ranking_path: str, tournament_path: str, player_path: str, conn: sqlite3.Connection):
+    def clean(value):
+        if value is None:
+            return None
+        value = value.strip()
+        return value if value else None
 
-        loader.atp_match_loader(match_path, conn)
-
-        loader.wta_match_loader(match_path, conn)
-
-        loader.ranking_loader(ranking_path, conn)
-
-        loader.tournament_loader(tournament_path, conn)
-
-        loader.player_loader(player_path, conn)
+    def iso_date(v):
+        v = loader.clean(v)
+        if v and len(v) == 8 and v.isdigit():
+            return f"{v[:4]}-{v[4:6]}-{v[6:]}"
+        return v
 
     def atp_match_loader(file_path: str, conn: sqlite3.Connection):
 
@@ -80,22 +81,28 @@ class loader:
         with open(file_path, 'r') as file:
             reader = csv.DictReader(file)
             for row in reader:
+                values = [loader.clean(row.get(col)) for col in [
+                    'tourney_id', 'match_num', 'winner_id', 'winner_seed', 'winner_name', 'winner_rank',
+                    'winner_rank_points', 'loser_id', 'loser_seed', 'loser_name', 'loser_rank', 'loser_rank_points',
+                    'score', 'best_of', 'round', 'minutes', 'w_ace', 'w_df', 'w_svpt', 'w_1stIn', 'w_1stWon',
+                    'w_2ndWon', 'w_SvGms', 'w_bpSaved', 'w_bpFaced', 'l_ace', 'l_df', 'l_svpt', 'l_1stIn',
+                    'l_1stWon', 'l_2ndWon', 'l_SvGms', 'l_bpSaved', 'l_bpFaced'
+                ]]
+
                 cursor.execute(
                     """
-                    insert or ignore into ATPMatches (tourney_id, match_num, wid, wseed, wname, wrank, 
+                    insert or ignore into ATPMatches (tourney_id, match_num, wid, wseed, wname, wrank,
                     wrank_points, lid, lseed, lname, lrank, lrank_points, score, best_of, round, minutes,
                     w_ace, w_df, w_svpt, w_1stIn, w_1stWon, w_2ndWon, w_SvGms, w_bpSaved, w_bpFaced, l_ace,
-                    l_df, l_svpt, l_1stIn, l_1stWon, l_2ndWon, l_SvGms, l_bpSaved, l_bpFaced) 
+                    l_df, l_svpt, l_1stIn, l_1stWon, l_2ndWon, l_SvGms, l_bpSaved, l_bpFaced)
                     values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                    (row['tourney_id'], row['match_num'], row['winner_id'], row['winner_seed'], row['winner_name'], row['winner_rank'], 
-                    row['winner_rank_points'], row['loser_id'], row['loser_seed'], row['loser_name'], row['loser_rank'], row['loser_rank_points'], 
-                    row['score'], row['best_of'], row['round'], row['minutes'], row['w_ace'], row['w_df'], row['w_svpt'], row['w_1stIn'], row['w_1stWon'], 
-                    row['w_2ndWon'], row['w_SvGms'], row['w_bpSaved'], row['w_bpFaced'], row['l_ace'], row['l_df'], row['l_svpt'], row['l_1stIn'], 
-                    row['l_1stWon'], row['l_2ndWon'], row['l_SvGms'], row['l_bpSaved'], row['l_bpFaced']))
+                    values)
 
                 loaded_count += 1
 
         conn.commit()
+
+        loader.tournament_loader(file_path, "atp", conn)
 
         print(f"Loaded {loaded_count} atp matches from {file_path}")
 
@@ -108,22 +115,28 @@ class loader:
         with open(file_path, 'r') as file:
             reader = csv.DictReader(file)
             for row in reader:
+                values = [loader.clean(row.get(col)) for col in [
+                    'tourney_id', 'match_num', 'winner_id', 'winner_seed', 'winner_name', 'winner_rank',
+                    'winner_rank_points', 'loser_id', 'loser_seed', 'loser_name', 'loser_rank', 'loser_rank_points',
+                    'score', 'best_of', 'round', 'minutes', 'w_ace', 'w_df', 'w_svpt', 'w_1stIn', 'w_1stWon',
+                    'w_2ndWon', 'w_SvGms', 'w_bpSaved', 'w_bpFaced', 'l_ace', 'l_df', 'l_svpt', 'l_1stIn',
+                    'l_1stWon', 'l_2ndWon', 'l_SvGms', 'l_bpSaved', 'l_bpFaced'
+                ]]
+
                 cursor.execute(
                     """
-                    insert or ignore into WTAMatches (tourney_id, match_num, wid, wseed, wname, wrank, 
+                    insert or ignore into WTAMatches (tourney_id, match_num, wid, wseed, wname, wrank,
                     wrank_points, lid, lseed, lname, lrank, lrank_points, score, best_of, round, minutes,
                     w_ace, w_df, w_svpt, w_1stIn, w_1stWon, w_2ndWon, w_SvGms, w_bpSaved, w_bpFaced, l_ace,
-                    l_df, l_svpt, l_1stIn, l_1stWon, l_2ndWon, l_SvGms, l_bpSaved, l_bpFaced) 
+                    l_df, l_svpt, l_1stIn, l_1stWon, l_2ndWon, l_SvGms, l_bpSaved, l_bpFaced)
                     values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                    (row['tourney_id'], row['match_num'], row['winner_id'], row['winner_seed'], row['winner_name'], row['winner_rank'], 
-                    row['winner_rank_points'], row['loser_id'], row['loser_seed'], row['loser_name'], row['loser_rank'], row['loser_rank_points'], 
-                    row['score'], row['best_of'], row['round'], row['minutes'], row['w_ace'], row['w_df'], row['w_svpt'], row['w_1stIn'], row['w_1stWon'], 
-                    row['w_2ndWon'], row['w_SvGms'], row['w_bpSaved'], row['w_bpFaced'], row['l_ace'], row['l_df'], row['l_svpt'], row['l_1stIn'], 
-                    row['l_1stWon'], row['l_2ndWon'], row['l_SvGms'], row['l_bpSaved'], row['l_bpFaced']))
+                    values)
 
                 loaded_count += 1
 
         conn.commit()
+
+        loader.tournament_loader(file_path, "wta", conn)
 
         print(f"Loaded {loaded_count} wta matches from {file_path}")
 
@@ -138,10 +151,6 @@ class loader:
 
         cursor = conn.cursor()
 
-        spilt_file_name = file_path.split("_")
-
-        ranking_date = spilt_file_name[2]
-
         loaded_count = 0
 
         with open(file_path, 'r') as file:
@@ -150,7 +159,8 @@ class loader:
                 cursor.execute(
                     """
                     insert or ignore into rankings (pid, rank, points, date)
-                    values(?, ?, ?, ?)""", (row['playerId'], row['rank'], row['points'], ranking_date))
+                    values(?, ?, ?, ?)""", (loader.clean(row.get('playerId')), loader.clean(row.get('rank')),
+                    loader.clean(row.get('points')), Path(file_path).stem.split("_")[-1]))
 
                 loaded_count += 1
 
@@ -158,9 +168,10 @@ class loader:
 
             print(f"loaded {loaded_count} atp rankings from {file_path}")
 
-    def tournament_loader(file_path: str, conn: sqlite3.Connection):
+    def tournament_loader(file_path: str, tour: str, conn: sqlite3.Connection):
 
         # tourney_id, -> tid
+        # tour_input -> tour
         # tourney_name -> tname
         # surface -> surface
         # draw_size -> draw_size
@@ -175,11 +186,18 @@ class loader:
         with open(file_path, 'r') as file:
             reader = csv.DictReader(file)
             for row in reader:
+                tid = loader.clean(row.get('tourney_id'))
+                name = loader.clean(row.get('tourney_name'))
+                surface = loader.iso_date(row.get('surface'))
+                draw_size = loader.clean(row.get('draw_size'))
+                t_level = loader.clean(row.get('tourney_level'))
+                indoor = loader.clean(row.get('indoor'))
+                date = loader.iso_date(row.get('tourney_date'))
+
                 cursor.execute(
                     """
-                    insert or ignore into tournaments (tid, tname, surface, draw_size, tlevel, indoor, date)
-                    values(?, ?, ?, ?, ?, ?, ?)""", (row['tourney_id'], row['tname'], row['surface'], row['draw_size'],
-                    row['tourney_level'], row['indoor'], row['tourney_date']))
+                    insert or ignore into tournaments (tid, tour, name, surface, draw_size, tourney_level, indoor, date)
+                    values(?, ?, ?, ?, ?, ?, ?, ?)""", (tid, tour, name, surface, draw_size, t_level, indoor, date))
 
                 loaded_count += 1
 
@@ -211,16 +229,25 @@ class loader:
         with open(file_path, 'r') as file:
             reader = csv.DictReader(file)
             for row in reader:
-                # Convert empty strings to None for integer columns
-                height = int(row['height']) if row['height'].strip() else None
-                turned_pro = int(row['turnedpro']) if row['turnedpro'].strip() else None
+                # Clean and convert fields
+                pid = loader.clean(row.get('id'))
+                name = loader.clean(row.get('atpname'))
+                birthdate = loader.iso_date(row.get('birthdate'))
+                height_raw = loader.clean(row.get('height'))
+                height = int(height_raw) if height_raw else None
+                turned_pro_raw = loader.clean(row.get('turnedpro'))
+                turned_pro = int(turned_pro_raw) if turned_pro_raw else None
+                birthplace = loader.clean(row.get('birthplace'))
+                coaches = loader.clean(row.get('coaches'))
+                hand = loader.clean(row.get('hand'))
+                backhand = loader.clean(row.get('backhand'))
+                ioc = loader.clean(row.get('ioc'))
 
                 cursor.execute(
                     """
                     insert or ignore into players (pid, name, birthdate, height, turned_pro, birthplace, coaches,
                     dominant_hand, backhand, nationality) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                    (row['id'], row['atpname'], row['birthdate'], height, turned_pro, row['birthplace'],
-                     row['coaches'], row['hand'], row['backhand'], row['ioc']))
+                    (pid, name, birthdate, height, turned_pro, birthplace, coaches, hand, backhand, ioc))
 
                 loaded_count += 1
 

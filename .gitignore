@@ -1,0 +1,4 @@
+__pycache__
+.venv
+tennis_data.db
+uv.lock

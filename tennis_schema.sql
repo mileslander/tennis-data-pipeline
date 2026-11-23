@@ -82,13 +82,14 @@ create table WTAMatches
 
 create table Tournaments
     (tid            integer,
+     tour           text,
      name           text,
      surface        text,
      draw_size      text,
      tourney_level  text,
      indoor         boolean,
      date           date,
-     primary key (tid)
+     primary key (tid, tour)
 );
 
 create table Players
@@ -111,4 +112,4 @@ create table Rankings
      points         integer,
      date           date,
      primary key(pid, date)
-    )
+);
