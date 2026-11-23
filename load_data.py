@@ -102,9 +102,9 @@ class loader:
 
         conn.commit()
 
-        loader.tournament_loader(file_path, "atp", conn)
+        loaded_count += loader.tournament_loader(file_path, "atp", conn)
 
-        print(f"Loaded {loaded_count} atp matches from {file_path}")
+        return loaded_count
 
     def wta_match_loader(file_path: str, conn: sqlite3.Connection):
 
@@ -136,9 +136,9 @@ class loader:
 
         conn.commit()
 
-        loader.tournament_loader(file_path, "wta", conn)
+        loaded_count += loader.tournament_loader(file_path, "wta", conn)
 
-        print(f"Loaded {loaded_count} wta matches from {file_path}")
+        return loaded_count
 
     def ranking_loader(file_path: str, conn: sqlite3.Connection):
 
@@ -147,7 +147,7 @@ class loader:
         # points -> points
         # date??
 
-        print(f"Loading from {file_path}")
+        print(f"loading from {file_path}")
 
         cursor = conn.cursor()
 
@@ -166,7 +166,7 @@ class loader:
 
             conn.commit()
 
-            print(f"loaded {loaded_count} atp rankings from {file_path}")
+            return loaded_count
 
     def tournament_loader(file_path: str, tour: str, conn: sqlite3.Connection):
 
@@ -203,7 +203,7 @@ class loader:
 
         conn.commit()
 
-        print(f"loaded {loaded_count} tournaments from {file_path}")
+        return loaded_count
 
     def player_loader(file_path: str, conn: sqlite3.Connection):
 
@@ -253,7 +253,7 @@ class loader:
 
         conn.commit()
 
-        print(f"loaded {loaded_count} player profiles from {file_path}")
+        return loaded_count
 
 
 

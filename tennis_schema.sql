@@ -1,3 +1,5 @@
+PRAGMA user_version = 1;
+
 create table ATPMatches
     (tourney_id         integer,
      match_num          integer,
@@ -38,6 +40,11 @@ create table ATPMatches
      foreign key (lid) references Players(pid),
      foreign key (tourney_id) references Tournaments(tid)
 );
+
+create index idx_atp_wid   on ATPMatches(wid);
+create index idx_atp_lid   on ATPMatches(lid);
+create index idx_atp_wname on ATPMatches(wname);
+create index idx_atp_lname on ATPMatches(lname);
 
 create table WTAMatches
     (tourney_id         integer,
@@ -80,6 +87,11 @@ create table WTAMatches
      foreign key (tourney_id) references Tournaments(tid)
 );
 
+create index idx_wta_wid   on WTAMatches(wid);
+create index idx_wta_lid   on WTAMatches(lid);
+create index idx_wta_wname on WTAMatches(wname);
+create index idx_wta_lname on WTAMatches(lname);
+
 create table Tournaments
     (tid            integer,
      tour           text,
@@ -114,14 +126,15 @@ create table Rankings
      primary key(pid, date)
 );
 
-create index idx_atp_wid   on ATPMatches(wid);
-create index idx_atp_lid   on ATPMatches(lid);
-create index idx_atp_wname on ATPMatches(wname);
-create index idx_atp_lname on ATPMatches(lname);
-
-create index idx_wta_wid   on WTAMatches(wid);
-create index idx_wta_lid   on WTAMatches(lid);
-create index idx_wta_wname on WTAMatches(wname);
-create index idx_wta_lname on WTAMatches(lname);
-
 create index idx_rankings_date on Rankings(date);
+
+create table Metadata
+    (built_at           text,
+     schema_version     text,
+     last_tournament_date    text
+);
+
+create table TableCounts
+    (table_name  text primary key,
+     row_count   integer
+);
