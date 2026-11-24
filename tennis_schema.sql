@@ -1,4 +1,4 @@
-PRAGMA user_version = 2;
+PRAGMA user_version = 3;
 
 create table ATPMatches
     (tourney_id         integer,
@@ -49,12 +49,12 @@ create index idx_atp_lname on ATPMatches(lname);
 create table WTAMatches
     (tourney_id         integer,
      match_num          integer,
-     wid                integer,
+     wid                text,
      wseed              integer,
      wname              text,
      wrank              integer,
      wrank_points       integer,
-     lid                integer,
+     lid                text,
      lseed              integer,
      lname              text,
      lrank              integer,
