@@ -3,3 +3,4 @@ __pycache__
 tennis_data.db
 uv.lock
 tml-data
+.DS_Store
