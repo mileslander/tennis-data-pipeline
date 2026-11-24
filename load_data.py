@@ -98,7 +98,9 @@ class loader:
                     values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                     values)
 
-                loaded_count += 1
+                loaded_count += cursor.rowcount
+
+                
 
         conn.commit()
 
@@ -132,7 +134,7 @@ class loader:
                     values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                     values)
 
-                loaded_count += 1
+                loaded_count += cursor.rowcount
 
         conn.commit()
 
@@ -162,7 +164,7 @@ class loader:
                     values(?, ?, ?, ?)""", (loader.clean(row.get('playerId')), loader.clean(row.get('rank')),
                     loader.clean(row.get('points')), Path(file_path).stem.split("_")[-1]))
 
-                loaded_count += 1
+                loaded_count += cursor.rowcount
 
             conn.commit()
 
@@ -188,7 +190,7 @@ class loader:
             for row in reader:
                 tid = loader.clean(row.get('tourney_id'))
                 name = loader.clean(row.get('tourney_name'))
-                surface = loader.iso_date(row.get('surface'))
+                surface = loader.clean(row.get('surface'))
                 draw_size = loader.clean(row.get('draw_size'))
                 t_level = loader.clean(row.get('tourney_level'))
                 indoor = loader.clean(row.get('indoor'))
@@ -199,7 +201,7 @@ class loader:
                     insert or ignore into tournaments (tid, tour, name, surface, draw_size, tourney_level, indoor, date)
                     values(?, ?, ?, ?, ?, ?, ?, ?)""", (tid, tour, name, surface, draw_size, t_level, indoor, date))
 
-                loaded_count += 1
+                loaded_count += cursor.rowcount
 
         conn.commit()
 
@@ -249,7 +251,7 @@ class loader:
                     dominant_hand, backhand, nationality) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                     (pid, name, birthdate, height, turned_pro, birthplace, coaches, hand, backhand, ioc))
 
-                loaded_count += 1
+                loaded_count += cursor.rowcount
 
         conn.commit()
 

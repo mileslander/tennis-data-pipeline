@@ -1,14 +1,14 @@
-PRAGMA user_version = 1;
+PRAGMA user_version = 2;
 
 create table ATPMatches
     (tourney_id         integer,
      match_num          integer,
-     wid                integer,
+     wid                text,
      wseed              integer,
      wname              text,
      wrank              integer,
      wrank_points       integer,
-     lid                integer,
+     lid                text,
      lseed              integer,
      lname              text,
      lrank              integer,
