@@ -1,0 +1,34 @@
+name: Update tennis database
+
+on:
+  schedule:
+    - cron: "0 9 * * *"     # daily, 09:00 UTC
+  workflow_dispatch:         # adds a "Run workflow" button for testing
+
+permissions:
+  contents: write            # needed to upload release assets
+
+concurrency:
+  group: update-db           # never run two builds at once
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Download previous database
+        run: gh release download db-latest --pattern tennis_data.db
+
+      - name: Build and verify
+        run: ./load_tml.sh
+
+      - name: Publish
+        run: gh release upload db-latest tennis_data.db --clobber
