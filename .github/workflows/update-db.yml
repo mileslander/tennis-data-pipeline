@@ -2,7 +2,7 @@ name: Update tennis database
 
 on:
   schedule:
-    - cron: "0 9 * * *"     # daily, 09:00 UTC
+    - cron: "17 8 * * *"    # daily, 08:17 UTC = 2:17 am CST / 3:17 am CDT (off the top of the hour to avoid dropped runs)
   workflow_dispatch:         # adds a "Run workflow" button for testing
 
 permissions:
